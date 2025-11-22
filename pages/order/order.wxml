@@ -1,0 +1,85 @@
+<view class="container">
+  <view class="page-header">
+    <text class="page-title">历史订单</text>
+
+  </view>
+
+  <scroll-view class="order-scroll" scroll-y>
+    <view class="order-list">
+      <view 
+        class="order-card" 
+        wx:for="{{orderList}}" 
+        wx:key="id"
+        bindtap="openDetail"
+        data-index="{{index}}"
+      >
+        <view class="card-header">
+          <text class="order-time">{{item.time}}</text>
+          <text class="order-status {{item.status === '已完成' ? 'done' : 'cooking'}}">{{item.status}}</text>
+        </view>
+
+        <view class="dish-preview">
+          <block wx:for="{{item.dishes}}" wx:key="id" wx:for-item="dish" wx:if="{{index < 4}}">
+            <image class="preview-img" src="{{dish.image}}" mode="aspectFill"></image>
+          </block>
+          <view class="more-count" wx:if="{{item.dishes.length > 4}}">...</view>
+        </view>
+
+        <view class="card-footer">
+          <text class="item-count">共 {{item.totalCount}} 道菜</text>
+          <view class="price-row">
+            <text>合计</text>
+            <text class="price-num">¥{{item.totalPrice}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view style="height: 60rpx;"></view>
+    </view>
+  </scroll-view>
+
+  <view class="detail-mask" wx:if="{{showDetail}}" bindtap="closeDetail">
+    <view class="detail-popup" catchtap="preventBubble">
+      <view class="detail-header">
+        <text>订单详情</text>
+        <view class="close-btn" bindtap="closeDetail">✕</view>
+      </view>
+
+      <scroll-view class="detail-scroll" scroll-y>
+        <view class="status-banner">
+          <text class="big-status">{{currentOrder.status}}</text>
+          <text class="order-id">单号：{{currentOrder.orderNo}}</text>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">菜品信息</view>
+          <view class="detail-dish-item" wx:for="{{currentOrder.dishes}}" wx:key="id">
+            <view class="detail-dish-name">
+              <text>{{item.name}}</text>
+              <text class="detail-dish-small" wx:if="{{item.count > 1}}">x{{item.count}}</text>
+            </view>
+            <text class="detail-dish-price">¥{{item.price * item.count}}</text>
+          </view>
+          <view class="detail-total-row">
+            <text>实付金额</text>
+            <text class="detail-final-price">¥{{currentOrder.totalPrice}}</text>
+          </view>
+        </view>
+
+        <view class="detail-section">
+          <view class="info-row">
+            <text class="label">备注信息</text>
+            <text class="value remark">{{currentOrder.remark || '无备注'}}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">下单时间</text>
+            <text class="value">{{currentOrder.time}}</text>
+          </view>
+         
+        </view>
+      </scroll-view>
+      
+     
+    </view>
+  </view>
+</view>

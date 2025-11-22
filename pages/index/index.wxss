@@ -1,0 +1,146 @@
+/** index.wxss **/
+page {
+  background-color: #f7f8fa;
+  height: 100vh;
+}
+
+.scrollarea {
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 30rpx;
+  background-image: linear-gradient(180deg, #ffe4c4 0%, #f7f8fa 40%); /* 顶部暖色渐变 */
+}
+
+/* 顶部标题 */
+.header-section {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.app-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #5a3e1b; /* 深咖色，更有质感 */
+  margin-bottom: 16rpx;
+  letter-spacing: 2rpx;
+}
+
+.app-subtitle {
+  font-size: 28rpx;
+  color: #a68b6c;
+  letter-spacing: 4rpx;
+}
+
+/* 登录卡片 */
+.login-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 30rpx;
+  padding: 60rpx 40rpx;
+  box-shadow: 0 10rpx 30rpx rgba(255, 156, 0, 0.1); /* 淡淡的橙色阴影 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 头像区域 */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50rpx;
+}
+
+.avatar-wrapper {
+  padding: 0;
+  width: 160rpx !important;
+  height: 160rpx !important;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: 6rpx solid #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.1);
+  position: relative;
+  overflow: visible; /* 允许图标超出 */
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.camera-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #ff9c00;
+  color: white;
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 24rpx;
+  border: 4rpx solid #fff;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 20rpx;
+}
+
+/* 输入框区域 */
+.input-section {
+  width: 100%;
+  margin-bottom: 60rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  padding-left: 10rpx;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 90rpx;
+  background: #f9f9f9;
+  border-radius: 16rpx;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  font-size: 30rpx;
+  color: #333;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.nickname-input:focus {
+  background: #fff;
+  border-color: #ff9c00; /* 聚焦时变橙色 */
+}
+
+/* 登录按钮 */
+.login-btn {
+  width: 100% !important;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%); /* 更有食欲的渐变橙黄 */
+  color: #5a3e1b;
+  font-size: 34rpx;
+  font-weight: bold;
+  border-radius: 48rpx;
+  padding: 0;
+  box-shadow: 0 10rpx 20rpx rgba(255, 179, 71, 0.4);
+}
+
+.btn-hover {
+  opacity: 0.9;
+  transform: scale(0.98);
+}

@@ -1,0 +1,170 @@
+/* === 1. 页面容器 (去掉默认 padding 实现顶格) === */
+page {
+  background-color: #f7f8fa;
+  /* 关键修改：去掉原来的 padding: 30rpx */
+  padding: 0; 
+  box-sizing: border-box;
+}
+
+.container {
+  /* 关键修改：内边距移到这里，且顶部只留极小空隙 */
+  padding: 20rpx 30rpx; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === 2. 顶部标题 === */
+.header-title {
+  /* 减少上方外边距，让它更靠上 */
+  margin-top: 10rpx; 
+  margin-bottom: 40rpx;
+  padding-left: 10rpx;
+}
+
+.header-title text {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 900;
+  color: #5a3e1b;
+  margin-bottom: 10rpx;
+  line-height: 1.2;
+}
+
+.header-title .sub-title {
+  font-size: 26rpx;
+  font-weight: normal;
+  color: #999;
+}
+
+/* === 3. 表单卡片 === */
+.form-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 0 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03);
+  /* 确保宽度撑满容器 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-section {
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.form-section.no-border {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+  border-left: 8rpx solid #ff9c00; /* 加粗一点橙色条 */
+  padding-left: 16rpx;
+  line-height: 1;
+}
+
+/* === 4. 标签与输入 === */
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 12rpx 28rpx;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.2s;
+  border: 1rpx solid transparent;
+}
+
+.tag.active {
+  background: #fff6e6;
+  color: #ff9c00;
+  border-color: #ff9c00;
+  font-weight: bold;
+}
+
+.feedback-area {
+  width: 100%;
+  height: 240rpx; /* 稍微加高一点 */
+  background: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.word-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #ccc;
+  margin-top: 10rpx;
+}
+
+/* === 5. 图片上传 === */
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.image-item, .image-upload-btn {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 12rpx;
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.image-item image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.image-upload-btn {
+  background: #f9f9f9;
+  border: 2rpx dashed #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.icon-camera {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.text {
+  font-size: 22rpx;
+}
+
+/* === 6. 底部按钮 === */
+.input {
+  height: 80rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.submit-btn {
+  margin-top: 60rpx;
+  background: linear-gradient(135deg, #ffb347 0%, #ff9c00 100%);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+  box-shadow: 0 8rpx 20rpx rgba(255, 156, 0, 0.3);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}

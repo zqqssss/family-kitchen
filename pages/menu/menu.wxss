@@ -1,0 +1,399 @@
+/* pages/menu/menu.wxss */
+
+/* === 1. 基础布局 === */
+page {
+  height: 100vh;
+  background-color: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  /* 如果使用了 custom 导航栏，这里可能需要 padding-top: 88px */
+}
+
+/* 顶部 Header */
+.header {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box; /* 确保 padding 不会撑大屏幕 */
+  
+  /* 关键：左右 padding 设为极小值 (如 10rpx)，实现视觉上的“顶格” */
+  /* 如果想要绝对贴边，可以改为 20rpx 0 */
+  padding: 20rpx 10rpx; 
+  
+  background: rgba(253, 253, 253, 0.014);
+  z-index: 20;
+  
+  /* Flex 布局：两端对齐，撑满左右 */
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  
+  /* 底部加一点阴影区分内容 */
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+
+/* 左侧文字：深咖色 + 橙色装饰条 */
+.welcome-text {
+  font-size: 38rpx;    /* 字体加大 */
+  font-weight: 900;    /* 特粗字体，更有分量 */
+  color: #5a3e1b;      /* 主题深咖色 */
+  line-height: 1;      /* 紧凑行高 */
+  
+  /* 左侧装饰条 (橙色) */
+  
+}
+
+/* 右侧头像：最右边 + 橙色边框 */
+.header-avatar {
+  width: 88rpx;       /* 头像加大 */
+  height: 88rpx;
+  border-radius: 50%;
+  
+  /* 关键：主题色描边 (橙色) */
+  border: 4rpx solid #ff9c00; 
+  
+  /* 稍微给一点阴影 */
+  box-shadow: 0 4rpx 10rpx rgba(255, 156, 0, 0.3);
+  
+  margin-right: 10rpx; /* 距离屏幕右边缘的极小缝隙 */
+  background-color: #eee;
+}
+
+
+/* === 2. 主内容区域 (左右分栏) === */
+.main-content {
+  flex: 1;
+  height: 0; /* 关键：解决高度塌陷 */
+  display: flex;
+  width: 100%;
+  background-color: #fff;
+}
+
+/* 左侧分类栏 */
+.sidebar {
+  width: 180rpx;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+.category-item {
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+.category-item.active {
+  background-color: #fff;
+  color: #ff9c00;
+  font-weight: bold;
+}
+
+.category-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 30rpx;
+  bottom: 30rpx;
+  width: 8rpx;
+  background-color: #ff9c00;
+  border-radius: 0 4rpx 4rpx 0;
+}
+
+.cat-badge {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 20rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  border-radius: 14rpx;
+  padding: 0 4rpx;
+}
+
+/* 右侧菜品列表 */
+.dish-list {
+  flex: 1;
+  height: 100%;
+  background-color: #fff;
+}
+
+.dish-list-content {
+  padding-bottom: 150rpx;
+}
+
+.category-block {
+  padding-bottom: 20rpx;
+}
+
+/* 粘性标题 */
+.category-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #fffbf0;
+  color: #5a3e1b;
+  padding: 10rpx 24rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border-left: 8rpx solid #ff9c00;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.02);
+}
+
+/* 菜品卡片 */
+.dish-item {
+  display: flex;
+  padding: 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f9f9f9;
+}
+
+.dish-img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 16rpx;
+  margin-right: 24rpx;
+  background-color: #eee;
+  flex-shrink: 0;
+}
+
+.dish-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 160rpx;
+}
+
+.dish-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dish-desc {
+  font-size: 24rpx;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dish-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.dish-price {
+  font-size: 34rpx;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+.dish-price::before { content: '¥'; font-size: 24rpx; margin-right: 2rpx; }
+
+/* 步进器 */
+.stepper { display: flex; align-items: center; }
+.btn { width: 48rpx; height: 48rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32rpx; font-weight: bold; box-sizing: border-box; }
+.btn.minus { border: 2rpx solid #e0e0e0; color: #666; background: #fff; padding-bottom: 6rpx; }
+.btn.add { background: #ff9c00; color: #fff; border: none; padding-bottom: 6rpx; box-shadow: 0 4rpx 10rpx rgba(255, 156, 0, 0.3); }
+.count { min-width: 50rpx; text-align: center; font-size: 30rpx; color: #333; font-weight: 500; }
+
+/* === 3. 底部悬浮条 === */
+.bottom-bar {
+  position: fixed;
+  bottom: 40rpx;
+  left: 30rpx;
+  right: 30rpx;
+  height: 100rpx;
+  background: #333;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.25);
+  z-index: 100;
+}
+.cart-icon-wrapper { position: relative; margin-right: 30rpx; display: flex; align-items: center; }
+.cart-icon { font-size: 48rpx; }
+.badge { position: absolute; top: -10rpx; right: -15rpx; background: #ff4d4f; color: #fff; font-size: 20rpx; min-width: 32rpx; height: 32rpx; line-height: 32rpx; text-align: center; border-radius: 16rpx; padding: 0 6rpx; border: 2rpx solid #333; }
+.total-price { flex: 1; color: #fff; font-size: 40rpx; font-weight: bold; }
+.currency { font-size: 24rpx; margin-right: 4rpx; }
+.submit-btn { background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%); color: #5a3e1b; font-size: 30rpx; font-weight: bold; border-radius: 40rpx; padding: 0 50rpx; height: 76rpx; line-height: 76rpx; margin: 0; }
+
+/* === 4. 用户菜单弹窗样式 (新功能) === */
+.menu-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+}
+
+.menu-popup {
+  width: 600rpx;
+  background: #fff;
+  border-radius: 30rpx;
+  padding: 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0,0,0,0.2);
+  animation: popupScale 0.2s ease-out;
+}
+
+@keyframes popupScale {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.menu-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+  padding-bottom: 30rpx;
+}
+
+.menu-avatar {
+  width: 120rpx; height: 120rpx;
+  border-radius: 50%; margin-bottom: 20rpx;
+  border: 4rpx solid #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
+}
+
+.menu-nickname { font-size: 36rpx; font-weight: bold; color: #333; }
+
+.menu-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
+
+.menu-item {
+  width: 48%;
+  background: #f9f9f9;
+  border-radius: 20rpx;
+  padding: 30rpx 0;
+  margin-bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.menu-item:active { background: #f0f0f0; }
+
+.menu-icon {
+  width: 80rpx; height: 80rpx;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40rpx; margin-bottom: 16rpx;
+}
+
+.menu-item text { font-size: 28rpx; color: #666; font-weight: 500; }
+
+.cart-detail-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6); /* 深一点的黑色背景 */
+  z-index: 150; /* 比底部条(200)低，比内容高 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 内容靠底 */
+}
+
+/* 2. 弹窗主体 */
+.cart-detail-popup {
+  background: #fff;
+  width: 100%;
+  border-radius: 30rpx 30rpx 0 0;
+  padding-bottom: 160rpx; /* 底部留出空间给 bottom-bar */
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+  max-height: 60vh; /* 最大高度占屏幕 60% */
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* 3. 标题栏 */
+.cart-header {
+  padding: 24rpx 30rpx;
+  background: #fdfdfd;
+  border-bottom: 1rpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 30rpx 30rpx 0 0;
+}
+
+.cart-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  border-left: 6rpx solid #ff9c00;
+  padding-left: 16rpx;
+}
+
+.clear-cart {
+  font-size: 26rpx;
+  color: #999;
+  display: flex;
+  align-items: center;
+}
+
+/* 4. 列表区域 */
+.cart-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f9f9f9;
+}
+
+.cart-item-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+  margin-right: 20rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cart-item-right {
+  display: flex;
+  align-items: center;
+}
+
+.cart-item-price {
+  color: #ff4d4f;
+  font-weight: bold;
+  font-size: 32rpx;
+  margin-right: 30rpx;
+}

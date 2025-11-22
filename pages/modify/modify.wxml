@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="header-title">
+    <text>完善信息</text>
+    <text class="sub-title">方便大厨更懂你的胃口</text>
+  </view>
+
+  <view class="form-card">
+    <view class="form-item">
+      <view class="label">联系电话</view>
+      <input 
+        class="input" 
+        type="number" 
+        maxlength="11" 
+        placeholder="请输入手机号" 
+        placeholder-style="color:#ccc"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="label">送餐地址</view>
+      <textarea 
+        class="textarea address-area" 
+        placeholder="请输入详细地址（门牌号等）" 
+        placeholder-style="color:#ccc"
+        disable-default-padding
+        value="{{address}}"
+        bindinput="onAddressInput"
+      ></textarea>
+    </view>
+
+    <view class="form-item no-border">
+      <view class="label">口味偏好</view>
+      <view class="tags-wrapper">
+        <view 
+          class="tag {{item.selected ? 'active' : ''}}" 
+          wx:for="{{tasteTags}}" 
+          wx:key="index"
+          bindtap="toggleTag"
+          data-index="{{index}}"
+        >{{item.name}}</view>
+      </view>
+      <textarea 
+        class="textarea remark-area" 
+        placeholder="还有其他要求吗？（如：少盐、不吃香菜）" 
+        placeholder-style="color:#ccc"
+        disable-default-padding
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+      ></textarea>
+    </view>
+  </view>
+
+  <button class="save-btn" bindtap="saveInfo">保存信息</button>
+</view>

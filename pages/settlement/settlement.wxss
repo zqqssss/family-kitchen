@@ -1,0 +1,227 @@
+/* pages/settlement/settlement.wxss */
+page {
+  background-color: #f5f5f5;
+  padding-bottom: 120rpx; /* 给底部按钮留出空间 */
+}
+
+.container {
+  /* 关键修改：去掉左右 padding，实现左右顶格 */
+  padding: 0; 
+  width: 100%;
+}
+
+/* 通用卡片样式 - 修改为通栏风格 */
+.section-card {
+  background: #fff;
+  width: 100%;
+  padding: 30rpx;
+  box-sizing: border-box; /* 确保 padding 不会撑大宽度 */
+  margin-bottom: 20rpx;
+  /* 去掉圆角，变成直角通栏 */
+  border-radius: 0; 
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  border-left: 8rpx solid #ff9c00;
+  padding-left: 16rpx;
+  line-height: 1;
+}
+
+/* === 新增：手动填写地址表单 === */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #f5f5f5;
+  padding: 24rpx 0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  width: 140rpx;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.form-textarea {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  height: 120rpx;
+  padding-top: 6rpx;
+  width: 100%;
+}
+
+/* === 菜品列表 === */
+.dish-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  background: #fdfdfd; /* 稍微给点背景区分 */
+  padding: 16rpx;
+  border-radius: 8rpx;
+}
+
+.dish-img {
+  width: 110rpx; height: 110rpx;
+  border-radius: 8rpx;
+  background: #eee;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.dish-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 110rpx;
+}
+
+.dish-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dish-count {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.dish-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.order-summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 1rpx solid #eee;
+  padding-top: 24rpx;
+  margin-top: 10rpx;
+}
+
+.summary-total {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.price-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ff4d4f;
+  margin-left: 10rpx;
+}
+
+/* === 用餐方式与备注 === */
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.row-label {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.dining-types {
+  display: flex;
+}
+
+.type-tag {
+  padding: 10rpx 40rpx;
+  border-radius: 6rpx; /* 方一点 */
+  font-size: 28rpx;
+  background: #f5f5f5;
+  color: #666;
+  margin-left: 20rpx;
+  border: 1rpx solid transparent;
+}
+
+.type-tag.active {
+  background: #fff6e6;
+  color: #ff9c00;
+  border-color: #ff9c00;
+  font-weight: bold;
+}
+
+.remark-box {
+  background: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+
+.remark-input {
+  width: 100%;
+  font-size: 28rpx;
+  min-height: 80rpx;
+  color: #333;
+}
+
+/* === 底部结算栏 === */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 110rpx;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.05);
+  z-index: 100;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.total-wrapper {
+  font-size: 28rpx;
+  color: #333;
+  display: flex;
+  align-items: baseline;
+}
+
+.final-price {
+  font-size: 44rpx;
+  color: #ff4d4f;
+  font-weight: bold;
+  margin-left: 10rpx;
+}
+
+.submit-btn {
+  margin: 0;
+  width: 260rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  background: linear-gradient(90deg, #ffb347 0%, #ff9c00 100%);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 42rpx;
+  box-shadow: 0 6rpx 12rpx rgba(255, 156, 0, 0.3);
+}

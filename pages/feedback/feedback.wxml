@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="header-title">
+    <text>用餐反馈</text>
+    <text class="sub-title">您的建议是我们进步的动力</text>
+  </view>
+
+  <view class="form-card">
+    <view class="form-section">
+      <view class="label">反馈类型</view>
+      <view class="tags-wrapper">
+        <view 
+          class="tag {{currentType === index ? 'active' : ''}}" 
+          wx:for="{{feedbackTypes}}" 
+          wx:key="index"
+          bindtap="selectType"
+          data-index="{{index}}"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="label">详细描述</view>
+      <textarea 
+        class="textarea feedback-area" 
+        placeholder="菜品口味如何？有什么不满意的地方？请告诉我们..." 
+        placeholder-style="color:#ccc"
+        disable-default-padding
+        maxlength="200"
+        bindinput="onContentInput"
+      ></textarea>
+      <view class="word-count">{{contentLength}}/200</view>
+    </view>
+
+    <view class="form-section">
+      <view class="label">上传图片 (选填)</view>
+      <view class="image-list">
+        <view class="image-item" wx:for="{{images}}" wx:key="*this">
+          <image src="{{item}}" mode="aspectFill"></image>
+        </view>
+        <view class="image-upload-btn" bindtap="chooseImage" wx:if="{{images.length < 3}}">
+          <text class="icon-camera">📷</text>
+          <text class="text">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section no-border">
+      <view class="label">联系电话 (选填)</view>
+      <input 
+        class="input" 
+        type="number" 
+        maxlength="11" 
+        placeholder="方便我们联系您" 
+        placeholder-style="color:#ccc"
+        bindinput="onPhoneInput"
+      />
+    </view>
+  </view>
+
+  <button class="submit-btn" bindtap="submitFeedback">提交反馈</button>
+</view>

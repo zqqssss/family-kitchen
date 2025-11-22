@@ -1,0 +1,30 @@
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    
+    <view class="header-section">
+      <view class="app-title">🥘 zqs的家庭厨房</view>
+      <view class="app-subtitle">唯有爱与美食不可辜负</view>
+    </view>
+
+    <view class="login-card">
+      <view class="avatar-section">
+        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+          <image class="avatar" src="{{userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+          <view class="camera-icon">📷</view>
+        </button>
+        <text class="tip-text">点击设置头像</text>
+      </view>
+
+      <view class="input-section">
+        <view class="label">您的昵称</view>
+        <input type="nickname" class="nickname-input" placeholder="例如：爸爸、大厨..." bind:change="onInputChange" value="{{userInfo.nickName}}"/>
+      </view>
+
+      <button class="login-btn" bindtap="handleLogin" hover-class="btn-hover">
+        确认登录
+      </button>
+    </view>
+
+  </view>
+</scroll-view>

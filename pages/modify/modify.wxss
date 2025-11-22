@@ -1,0 +1,115 @@
+page {
+  background-color: #f7f8fa;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.header-title {
+  margin-bottom: 40rpx;
+  padding-left: 10rpx;
+}
+
+.header-title text {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 900;
+  color: #5a3e1b;
+  margin-bottom: 10rpx;
+}
+
+.header-title .sub-title {
+  font-size: 26rpx;
+  font-weight: normal;
+  color: #999;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 0 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03);
+}
+
+.form-item {
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.form-item.no-border {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid #ff9c00;
+  padding-left: 16rpx;
+  line-height: 1;
+}
+
+.input {
+  font-size: 30rpx;
+  color: #333;
+  height: 80rpx;
+}
+
+.textarea {
+  width: 100%;
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.address-area {
+  height: 100rpx;
+}
+
+.remark-area {
+  height: 120rpx;
+  background: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  margin-top: 20rpx;
+}
+
+/* 口味标签 */
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10rpx;
+}
+
+.tag {
+  padding: 10rpx 24rpx;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.2s;
+}
+
+.tag.active {
+  background: #fff6e6;
+  color: #ff9c00;
+  border: 1rpx solid #ff9c00;
+  font-weight: bold;
+}
+
+.save-btn {
+  margin-top: 60rpx;
+  background: linear-gradient(135deg, #ffb347 0%, #ff9c00 100%);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+  box-shadow: 0 8rpx 20rpx rgba(255, 156, 0, 0.3);
+}
+
+.save-btn:active {
+  transform: scale(0.98);
+}
