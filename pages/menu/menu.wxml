@@ -105,7 +105,7 @@
     <view class="menu-popup" catchtap="preventBubble"> 
       <view class="menu-header">
         <image class="menu-avatar" src="{{userInfo.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"></image>
-        <view class="menu-nickname">{{userInfo.nickName || '未登录'}}</view>
+        <view class="menu-nickname">{{userInfo.nickname || '未登录'}}</view>
       </view>
       
       <view class="menu-grid">

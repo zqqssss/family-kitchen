@@ -64,7 +64,8 @@ Page({
     // 读取登录页存入的用户信息
     const userInfo = wx.getStorageSync('userInfo') || {}
     this.setData({ userInfo })
-
+    console.log("=========")
+    console.log(userInfo)
     setTimeout(() => {
       this.calculateHeights()
     }, 800)
