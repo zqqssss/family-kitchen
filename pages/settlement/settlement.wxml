@@ -1,5 +1,6 @@
 <view class="container">
   
+  <!-- 收货信息 -->
   <view class="section-card">
     <view class="card-title">收货信息</view>
     <view class="form-group">
@@ -10,7 +11,7 @@
           class="form-input" 
           placeholder="请输入您的姓名" 
           placeholder-style="color:#ccc;" 
-          value="{{userName}}"
+          value="{{displayUserInfo.nickname}}"
           bindinput="onNameInput"
         />
       </view>
@@ -23,19 +24,19 @@
           maxlength="11" 
           placeholder="请输入手机号码" 
           placeholder-style="color:#ccc;" 
-          value="{{phone}}"
+          value="{{displayUserInfo.phone}}"
           bindinput="onPhoneInput"
         />
       </view>
       
-      <view class="form-item" style="align-items: flex-start;">
-        <text class="form-label" style="padding-top: 10rpx;">地址</text>
+      <view class="form-item address-item">
+        <text class="form-label">地址</text>
         <textarea 
           class="form-textarea" 
           placeholder="请输入详细送餐地址（楼号/门牌号）" 
           placeholder-style="color:#ccc;" 
           auto-height
-          value="{{address}}"
+          value="{{displayUserInfo.address}}"
           bindinput="onAddressInput"
         ></textarea>
       </view>
@@ -43,6 +44,7 @@
     </view>
   </view>
 
+  <!-- 餐品详情 -->
   <view class="section-card">
     <view class="card-title">餐品详情</view>
     <view class="dish-list">
@@ -56,7 +58,7 @@
       </view>
     </view>
     <view class="order-summary">
-      <text style="color: #999; font-size: 26rpx; margin-right: 20rpx;">共 {{totalCount}} 件</text>
+      <text class="summary-count">共 {{totalCount}} 件</text>
       <view class="summary-total">
         <text>小计：</text>
         <text class="price-num">¥{{totalPrice}}</text>
@@ -64,24 +66,28 @@
     </view>
   </view>
 
-  <view class="section-card">
-    
-    
-    <view class="card-title" style="margin-bottom: 20rpx; border:none; padding:0;">备注</view>
-    <view class="remark-box">
-      <textarea 
-        class="remark-input" 
-        placeholder="口味偏好、忌口等要求..." 
-        placeholder-style="color:#ccc;" 
-        maxlength="50"
-        bindinput="onRemarkInput"
-        auto-height
-      ></textarea>
-    </view>
+  <!-- 备注 -->
+  <view class="section-card remark-card">
+    <view class="card-title">备注</view>
+    <textarea 
+      class="remark-input" 
+      placeholder="口味偏好、忌口等要求..." 
+      placeholder-style="color:#ccc;" 
+      maxlength="50"
+      bindinput="onRemarkInput"
+      auto-height
+    ></textarea>
   </view>
   
 </view>
 
-
-
-<view class="bottom-bar"> <view class="total-wrapper"> <text>合计：</text> <text class="final-price">¥{{totalPrice}}</text> </view> <button class="submit-btn" bindtap="submitOrder" loading="{{loading}}">提交订单</button> </view> 
+<!-- 底部结算栏 -->
+<view class="bottom-bar">
+  <view class="total-wrapper">
+    <text>合计：</text>
+    <text class="final-price">¥{{totalPrice}}</text>
+  </view>
+  <button class="submit-btn" bindtap="submitOrder" loading="{{loading}}">
+    提交订单
+  </button>
+</view>

@@ -1,50 +1,125 @@
-// 引入之前封装好的 request 工具 (假设你在 utils/request.js)
-//const api = require('../../../utils/request')
+const API_BASE_URL = 'http://localhost:8080/api'
+
+const request = (url, method = 'GET', data = {}) => {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${API_BASE_URL}${url}`,
+      method,
+      data,
+      header: { 'content-type': 'application/json' },
+      success: (res) => {
+        if (res.statusCode === 200) {
+          resolve(res.data)
+        } else {
+          reject(res)
+        }
+      },
+      fail: reject
+    })
+  })
+}
 
 Page({
   data: {
-    address: null,    // 收货地址
-    cartList: [],     // 菜品列表
-    totalPrice: 0,    // 总价
-    totalCount: 0,    // 总数量
-    remark: '',       // 备注
-    diningType: 1,    // 1:堂食 2:打包
-    loading: false
+    userInfo: null,
+    address: null,
+    cartList: [],
+    totalPrice: 0,
+    totalCount: 0,
+    remark: '',
+    diningType: 1,
+    loading: false,
+    
+    // 用于界面展示的用户信息
+    displayUserInfo: {
+      nickname: '加载中...',
+      phone: '加载中...',
+      address: '加载中...',
+      avatarUrl: '/images/default-avatar.png'
+    }
   },
 
-  onLoad() {
-    // 1. 获取菜单页传过来的数据
+  async onLoad() {
+    console.log('📱 页面加载开始')
+    
     const cartList = wx.getStorageSync('checkedDishes') || []
     const totalPrice = wx.getStorageSync('orderTotalPrice') || 0
     const totalCount = wx.getStorageSync('orderTotalCount') || 0
     
-    // 2. 尝试获取之前的默认地址（可选优化）
-    const lastAddress = wx.getStorageSync('lastAddress')
+    this.setData({ 
+      cartList, 
+      totalPrice, 
+      totalCount 
+    })
     
-    this.setData({
-      cartList,
-      totalPrice,
-      totalCount,
-      address: lastAddress || null
-    })
+    // 加载用户信息
+    await this.loadUserInfo()
+    
+    console.log('✅ 页面加载完成，最终displayUserInfo:', this.data.displayUserInfo)
   },
 
-  // 选择地址 (调用微信原生收货地址)
-  chooseAddress() {
-    wx.chooseAddress({
-      success: (res) => {
-        this.setData({ address: res })
-        wx.setStorageSync('lastAddress', res) // 记住上次用的地址
-      },
-      fail: (err) => {
-        console.log('用户拒绝或取消选择地址', err)
+  async loadUserInfo() {
+    try {
+      const userInfo = wx.getStorageSync('userInfo')
+      
+      if (!userInfo || !userInfo.id) {
+        wx.showToast({ title: '请先登录', icon: 'none' })
+        setTimeout(() => {
+          wx.reLaunch({ url: '/pages/index/index' })
+        }, 1500)
+        return
       }
-    })
-  },
 
-  // 切换用餐方式
-  changeType(e) {
-    this.setData({ diningType: e.currentTarget.dataset.type })
+      console.log('🔍 开始请求用户信息，userId:', userInfo.id)
+
+      // 调用后端接口
+      const res = await request(`/user/${userInfo.id}`, 'GET')
+      
+      console.log('📦 后端返回完整数据:', res)
+      console.log('📦 res.data:', res.data)
+
+      if (res.code === 200 && res.data) {
+        const userData = res.data
+        
+        // 🎯 核心：直接使用 setData 设置所有数据
+        this.setData({
+          userInfo: userData,
+          displayUserInfo: {
+            nickname: userData.nickname || '未设置昵称',
+            phone: userData.phone || '未设置手机号',
+            address: userData.address || '未设置地址',
+            avatarUrl: userData.avatarUrl || '/images/default-avatar.png'
+          }
+        })
+        
+        console.log('✅ 用户信息映射完成:')
+        console.log('  - 昵称:', this.data.displayUserInfo.nickname)
+        console.log('  - 手机号:', this.data.displayUserInfo.phone)
+        console.log('  - 地址:', this.data.displayUserInfo.address)
+        
+        // 自动填充收货地址
+        if (userData.phone && userData.address) {
+          this.setData({
+            address: {
+              userName: userData.nickname || '用户',
+              telNumber: userData.phone,
+              provinceName: '',
+              cityName: '',
+              countyName: '',
+              detailInfo: userData.address
+            }
+          })
+          console.log('✅ 收货地址自动填充完成')
+        }
+        
+      } else {
+        throw new Error(res.message || '用户信息获取失败')
+      }
+
+    } catch (err) {
+      console.error('❌ 获取用户信息失败:', err)
+      wx.showToast({ title: '获取用户信息失败', icon: 'none' })
+    }
   },
 
   // 输入备注
@@ -52,11 +127,49 @@ Page({
     this.setData({ remark: e.detail.value })
   },
 
+  // 切换用餐方式
+  changeDiningType(e) {
+    this.setData({ diningType: e.currentTarget.dataset.type })
+  },
+
+  // 选择微信地址
+  chooseWechatAddress() {
+    wx.chooseAddress({
+      success: (res) => {
+        this.setData({
+          address: {
+            userName: res.userName,
+            telNumber: res.telNumber,
+            provinceName: res.provinceName,
+            cityName: res.cityName,
+            countyName: res.countyName,
+            detailInfo: res.detailInfo
+          }
+        })
+        
+        // 更新显示信息
+        this.setData({
+          'displayUserInfo.phone': res.telNumber,
+          'displayUserInfo.address': `${res.provinceName}${res.cityName}${res.countyName}${res.detailInfo}`
+        })
+        
+        console.log('✅ 手动选择地址完成')
+      },
+      fail: (err) => {
+        console.log('用户取消选择地址', err)
+      }
+    })
+  },
+
   // 提交订单
   async submitOrder() {
-    // 1. 基础校验
     if (!this.data.address) {
       wx.showToast({ title: '请选择收货地址', icon: 'none' })
+      return
+    }
+
+    if (!this.data.userInfo) {
+      wx.showToast({ title: '用户信息异常,请重新登录', icon: 'none' })
       return
     }
     
@@ -64,20 +177,19 @@ Page({
     this.setData({ loading: true })
 
     try {
-      // 2. 构造传给 Java 后端的参数 (DTO)
-      // 注意：这里的字段名要跟你 Java 后端的 OrderDTO 对应
       const orderData = {
-        // 地址信息
-        address: `${this.data.address.provinceName}${this.data.address.cityName}${this.data.address.countyName}${this.data.address.detailInfo}`,
+        userId: this.data.userInfo.id,
         consignee: this.data.address.userName,
         phone: this.data.address.telNumber,
-        
-        // 订单基本信息
+        address: [
+          this.data.address.provinceName,
+          this.data.address.cityName,
+          this.data.address.countyName,
+          this.data.address.detailInfo
+        ].filter(Boolean).join(''),
         amount: this.data.totalPrice,
         remark: this.data.remark,
         diningType: this.data.diningType === 1 ? 'DINE_IN' : 'TAKE_OUT',
-        
-        // 菜品明细
         items: this.data.cartList.map(item => ({
           dishId: item.id,
           name: item.name,
@@ -86,31 +198,32 @@ Page({
         }))
       }
 
-      console.log('提交给后端的数据:', orderData)
+      console.log('📮 提交订单数据:', orderData)
 
-      // 3. 发送请求
-      // 假设你的后端接口是 POST /order/create
-      const res = await api.post('/order/create', orderData)
+      const res = await request('/order/create', 'POST', orderData)
 
-      // 4. 下单成功处理
-      wx.showToast({ title: '下单成功', icon: 'success' })
-      
-      // 清空购物车缓存
-      wx.removeStorageSync('cart') // 清空原始购物车
-      wx.removeStorageSync('checkedDishes')
-      
-      // 延迟跳转到订单列表页
-      setTimeout(() => {
-        // 假设订单页是 TabBar
-        // wx.switchTab({ url: '/pages/order/list' }) 
-        // 或者直接返回首页
-        wx.reLaunch({ url: '/pages/menu/menu' })
-      }, 1500)
+      if (res.code === 200) {
+        wx.showToast({ title: '下单成功', icon: 'success' })
+        
+        // 清除购物车数据
+        wx.removeStorageSync('cart')
+        wx.removeStorageSync('checkedDishes')
+        wx.removeStorageSync('orderTotalPrice')
+        wx.removeStorageSync('orderTotalCount')
+        
+        setTimeout(() => {
+          wx.reLaunch({ url: '/pages/menu/menu' })
+        }, 1500)
+      } else {
+        throw new Error(res.message || '下单失败')
+      }
 
     } catch (err) {
-      console.error(err)
-      // 错误提示通常在 request.js 里处理了，这里可以额外提示
-      // wx.showToast({ title: '下单失败', icon: 'none' })
+      console.error('❌ 提交订单失败:', err)
+      wx.showToast({ 
+        title: err.message || '下单失败,请重试', 
+        icon: 'none' 
+      })
     } finally {
       this.setData({ loading: false })
     }
