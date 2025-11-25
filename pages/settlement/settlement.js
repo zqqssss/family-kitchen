@@ -179,23 +179,23 @@ Page({
     try {
       const orderData = {
         userId: this.data.userInfo.id,
-        consignee: this.data.address.userName,
-        phone: this.data.address.telNumber,
-        address: [
-          this.data.address.provinceName,
-          this.data.address.cityName,
-          this.data.address.countyName,
-          this.data.address.detailInfo
-        ].filter(Boolean).join(''),
-        amount: this.data.totalPrice,
-        remark: this.data.remark,
-        diningType: this.data.diningType === 1 ? 'DINE_IN' : 'TAKE_OUT',
-        items: this.data.cartList.map(item => ({
-          dishId: item.id,
-          name: item.name,
-          quantity: item.count,
-          price: item.price
-        }))
+  consignee: this.data.address.userName,
+  phone: this.data.address.telNumber,
+  address: [
+    this.data.address.provinceName,
+    this.data.address.cityName,
+    this.data.address.countyName,
+    this.data.address.detailInfo
+  ].filter(Boolean).join(''),
+  amount: this.data.totalPrice,
+  remark: this.data.remark,
+  diningType: this.data.diningType === 1 ? 'DINE_IN' : 'TAKE_OUT',
+  items: this.data.cartList.map(item => ({
+    dishId: item.id,      // ✅ 对应后端的dishId
+    name: item.name,
+    quantity: item.count,  // ✅ 对应后端的quantity
+    price: item.price
+  }))
       }
 
       console.log('📮 提交订单数据:', orderData)

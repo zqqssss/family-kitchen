@@ -1,110 +1,122 @@
 <view class="container">
+  
+  <!-- 顶部栏 -->
   <view class="header">
     <view class="welcome-text">今天想吃点什么？😋</view>
     <image 
       class="header-avatar" 
-      src="{{userInfo.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" 
+      src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" 
       mode="aspectFill"
       bindtap="toggleUserMenu"
-    ></image>
+    />
   </view>
 
-  <view class="main-content">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-wrapper">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <!-- 主内容区 -->
+  <view wx:else class="main-content">
     
+    <!-- 左侧分类栏 -->
     <scroll-view class="sidebar" scroll-y>
-      <view 
-        wx:for="{{categoryList}}" 
-        wx:key="id" 
-        class="category-item {{currentCategory === index ? 'active' : ''}}"
-        bindtap="switchCategory"
-        data-index="{{index}}"
-      >
-        <view class="category-name">{{item.name}}</view>
-        <view class="cat-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
-      </view>
+      <block wx:for="{{categoryList}}" wx:key="id">
+        <view 
+          class="category-item {{currentCategory === index ? 'active' : ''}}"
+          bindtap="switchCategory"
+          data-index="{{index}}"
+        >
+          <view class="category-name">{{item.name}}</view>
+          <view class="cat-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
+        </view>
+      </block>
     </scroll-view>
 
+    <!-- 右侧菜品列表 -->
     <scroll-view 
       class="dish-list" 
       scroll-y 
-      scroll-with-animation="{{true}}"
+      scroll-with-animation
       scroll-into-view="{{toView}}"
       bindscroll="onRightScroll"
     >
       <view class="dish-list-content">
         
-        <view 
-          class="category-block" 
-          wx:for="{{categoryList}}" 
-          wx:key="id" 
-          wx:for-item="category" 
-          wx:for-index="catIndex"
-          id="category-{{catIndex}}" 
-        >
-          <view class="category-sticky-header">
-            {{category.name}}
-          </view>
-          
-          <view 
-            class="dish-item" 
-            wx:for="{{category.dishes}}" 
-            wx:key="id" 
-            wx:for-item="dish"
-          >
-            <image class="dish-img" src="{{dish.image}}" mode="aspectFill"></image>
+        <block wx:for="{{categoryList}}" wx:key="id" wx:for-item="category" wx:for-index="catIndex">
+          <view class="category-block" id="category-{{catIndex}}">
             
-            <view class="dish-info">
-              <view class="dish-name">{{dish.name}}</view>
-              <view class="dish-desc">{{dish.description || '美味家常菜'}}</view>
-              
-              <view class="dish-bottom">
-                <view class="dish-price">{{dish.price}}</view>
+            <!-- 分类标题 -->
+            <view class="category-sticky-header">{{category.name}}</view>
+            
+            <!-- 菜品列表 -->
+            <block wx:for="{{category.dishes}}" wx:key="id" wx:for-item="dish">
+              <view class="dish-item">
                 
-                <view class="stepper">
-                  <view 
-                    class="btn minus" 
-                    wx:if="{{cart[dish.id] > 0}}" 
-                    catchtap="updateCart" 
-                    data-type="minus" 
-                    data-id="{{dish.id}}"
-                    data-cat-index="{{catIndex}}"
-                  >-</view>
+                <image class="dish-img" src="{{dish.image}}" mode="aspectFill" />
+                
+                <view class="dish-info">
+                  <view class="dish-name">{{dish.name}}</view>
+                  <view class="dish-desc">{{dish.description || '美味家常菜'}}</view>
                   
-                  <view class="count" wx:if="{{cart[dish.id] > 0}}">{{cart[dish.id]}}</view>
-                  
-                  <view 
-                    class="btn add" 
-                    catchtap="updateCart" 
-                    data-type="add" 
-                    data-id="{{dish.id}}"
-                    data-cat-index="{{catIndex}}"
-                  >+</view>
+                  <view class="dish-bottom">
+                    <view class="dish-price">{{dish.price}}</view>
+                    
+                    <!-- 加减按钮 -->
+                    <view class="stepper">
+                      <view 
+                        wx:if="{{cart[dish.id] > 0}}"
+                        class="btn minus" 
+                        catchtap="updateCart" 
+                        data-type="minus" 
+                        data-id="{{dish.id}}"
+                        data-cat-index="{{catIndex}}"
+                      >-</view>
+                      
+                      <view wx:if="{{cart[dish.id] > 0}}" class="count">
+                        {{cart[dish.id]}}
+                      </view>
+                      
+                      <view 
+                        class="btn add" 
+                        catchtap="updateCart" 
+                        data-type="add" 
+                        data-id="{{dish.id}}"
+                        data-cat-index="{{catIndex}}"
+                      >+</view>
+                    </view>
+                  </view>
                 </view>
               </view>
-            </view>
-          </view> 
-        </view> 
-
+            </block>
+          </view>
+        </block>
+        
       </view>
     </scroll-view>
   </view>
 
-  <view class="bottom-bar" wx:if="{{totalCount > 0}}">
-    <view class="cart-icon-wrapper">
+  <!-- 底部购物车栏 -->
+  <view wx:if="{{totalCount > 0}}" class="bottom-bar">
+    <view class="cart-icon-wrapper" bindtap="toggleCartDetail">
       <view class="cart-icon">🛒</view>
       <view class="badge">{{totalCount}}</view>
     </view>
-    <view class="total-price">
+    
+    <view class="total-price" bindtap="toggleCartDetail">
       <text class="currency">¥</text>
       <text class="amount">{{totalPrice}}</text>
     </view>
+    
     <button class="submit-btn" bindtap="goToOrder">选好了</button>
   </view>
 
-  <view class="menu-mask" wx:if="{{showUserMenu}}" bindtap="toggleUserMenu">
-    <view class="menu-popup" catchtap="preventBubble"> 
+  <!-- 用户菜单弹窗 -->
+  <view wx:if="{{showUserMenu}}" class="menu-mask" bindtap="toggleUserMenu">
+    <view class="menu-popup" catchtap="preventBubble">
+      
       <view class="menu-header">
-        <image class="menu-avatar" src="{{userInfo.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"></image>
+        <image class="menu-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" />
         <view class="menu-nickname">{{userInfo.nickname || '未登录'}}</view>
       </view>
       
@@ -129,32 +141,46 @@
     </view>
   </view>
 
-</view>
-<view class="bottom-bar" wx:if="{{totalCount > 0}}" style="z-index: 200;"> <view class="cart-icon-wrapper" bindtap="toggleCartDetail"> <view class="cart-icon">🛒</view> <view class="badge">{{totalCount}}</view> </view> <view class="total-price" bindtap="toggleCartDetail"> <text class="currency">¥</text> <text class="amount">{{totalPrice}}</text> </view>
-
-<button class="submit-btn" bindtap="goToOrder">选好了</button>
-</view>
-
-<view class="cart-detail-mask" wx:if="{{showCartDetail}}" bindtap="toggleCartDetail"> <view class="cart-detail-popup" catchtap="preventBubble">
-  <view class="cart-header">
-  <text class="cart-title">已选商品</text>
-  <view class="clear-cart" bindtap="clearCart">
-    <text>🗑️ 清空</text>
-  </view>
-</view>
-
-<scroll-view class="cart-scroll" scroll-y>
-  <view class="cart-item" wx:for="{{cartList}}" wx:key="id">
-    <view class="cart-item-name">{{item.name}}</view>
-    <view class="cart-item-right">
-      <text class="cart-item-price">¥{{item.price * item.count}}</text>
+  <!-- 购物车详情弹窗 -->
+  <view wx:if="{{showCartDetail}}" class="cart-detail-mask" bindtap="toggleCartDetail">
+    <view class="cart-detail-popup" catchtap="preventBubble">
       
-      <view class="stepper">
-        <view class="btn minus" catchtap="updateCart" data-type="minus" data-id="{{item.id}}" data-cat-index="{{item.catIndex}}">-</view>
-        <view class="count">{{item.count}}</view>
-        <view class="btn add" catchtap="updateCart" data-type="add" data-id="{{item.id}}" data-cat-index="{{item.catIndex}}">+</view>
+      <view class="cart-header">
+        <text class="cart-title">已选商品</text>
+        <view class="clear-cart" bindtap="clearCart">
+          <text>🗑️ 清空</text>
+        </view>
       </view>
+      
+      <scroll-view class="cart-scroll" scroll-y>
+        <block wx:for="{{cartList}}" wx:key="id">
+          <view class="cart-item">
+            <view class="cart-item-name">{{item.name}}</view>
+            <view class="cart-item-right">
+              <text class="cart-item-price">¥{{item.price * item.count}}</text>
+              
+              <view class="stepper">
+                <view 
+                  class="btn minus" 
+                  catchtap="updateCart" 
+                  data-type="minus" 
+                  data-id="{{item.id}}"
+                  data-cat-index="{{item.catIndex}}"
+                >-</view>
+                <view class="count">{{item.count}}</view>
+                <view 
+                  class="btn add" 
+                  catchtap="updateCart" 
+                  data-type="add" 
+                  data-id="{{item.id}}"
+                  data-cat-index="{{item.catIndex}}"
+                >+</view>
+              </view>
+            </view>
+          </view>
+        </block>
+      </scroll-view>
     </view>
   </view>
-</scroll-view>
-</view> </view>
+
+</view>

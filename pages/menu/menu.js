@@ -1,91 +1,153 @@
 Page({
   data: {
     // 1. 页面状态
-    currentCategory: 0, 
+    currentCategory: 0,
     toView: '',
     
-    // 用户菜单相关
+    // 2. 用户信息
     showUserMenu: false,
     userInfo: {},
     
-    // 2. 购物车与数据
-    cart: {},
-     cartList: [], // 【新增】用于渲染购物车详情弹窗的列表
-    showCartDetail: false, // 【新增】控制购物车详情弹窗显示
-    totalCount: 0,
-    totalPrice: 0,
+    // 3. 购物车相关
+    cart: {},                    // { dishId: count }
+    cartList: [],                // 购物车详情列表
+    showCartDetail: false,       // 购物车弹窗
+    totalCount: 0,               // 总数量
+    totalPrice: 0,               // 总价格
     
-    // 3. 滚动联动
-    heightArr: [],
-    isTap: false,
+    // 4. 菜单数据
+    categoryList: [],            // 从后端加载
+    heightArr: [],               // 滚动高度数组
+    isTap: false,                // 是否点击切换分类
+    
+    // 5. 加载状态
+    loading: true
+  },
 
-    // 4. 完整数据 (防止白屏)
-    categoryList: [
+  // ==================== 生命周期 ====================
+  
+  onLoad() {
+    this.loadUserInfo()
+    this.loadMenuData()
+  },
+
+  onShow() {
+    // 每次显示页面时重新计算高度(防止页面返回后错位)
+    if (this.data.categoryList.length > 0) {
+      setTimeout(() => this.calculateHeights(), 500)
+    }
+  },
+
+  // ==================== 数据加载 ====================
+  
+  /**
+   * 加载用户信息
+   */
+  loadUserInfo() {
+    const userInfo = wx.getStorageSync('userInfo') || {}
+    this.setData({ userInfo })
+  },
+
+  /**
+   * 从后端加载菜单数据
+   */
+  loadMenuData() {
+    wx.showLoading({ title: '加载菜单...' })
+    
+    wx.request({
+      url: 'http://localhost:8080/api/recipe/menu',
+      method: 'GET',
+      success: (res) => {
+        console.log('菜单数据:', res.data)
+        
+        if (res.data.code === 200) {
+          const categoryList = res.data.data.map(cat => ({
+            ...cat,
+            count: 0  // 初始化分类角标为0
+          }))
+          
+          this.setData({ 
+            categoryList,
+            loading: false
+          })
+          
+          // 数据加载完成后计算高度
+          setTimeout(() => this.calculateHeights(), 800)
+        } else {
+          this.handleLoadError('加载失败: ' + res.data.message)
+        }
+      },
+      fail: (err) => {
+        console.error('请求失败:', err)
+        this.handleLoadError('网络错误，请检查后端是否启动')
+      },
+      complete: () => {
+        wx.hideLoading()
+      }
+    })
+  },
+
+  /**
+   * 加载失败处理
+   */
+  handleLoadError(message) {
+    wx.showModal({
+      title: '提示',
+      content: message,
+      showCancel: false,
+      success: () => {
+        // 使用默认数据
+        this.setData({ 
+          categoryList: this.getDefaultData(),
+          loading: false
+        })
+      }
+    })
+  },
+
+  /**
+   * 默认数据(防止白屏)
+   */
+  getDefaultData() {
+    return [
       {
         id: 1, name: '招牌热菜', count: 0,
         dishes: [
-          { id: 101, name: '红烧肉', price: 48, image: 'https://dummyimage.com/200x200/ff9c00/ffffff.png&text=Pork', description: '肥而不腻，入口即化' },
-          { id: 102, name: '糖醋排骨', price: 38, image: 'https://dummyimage.com/200x200/ff9c00/ffffff.png&text=Ribs', description: '酸甜可口' },
-          { id: 103, name: '宫保鸡丁', price: 28, image: 'https://dummyimage.com/200x200/ff9c00/ffffff.png&text=Chicken' }
-        ]
-      },
-      {
-        id: 2, name: '清爽凉菜', count: 0,
-        dishes: [
-          { id: 201, name: '拍黄瓜', price: 12, image: 'https://dummyimage.com/200x200/90ee90/ffffff.png&text=Cucumber' },
-          { id: 202, name: '口水鸡', price: 26, image: 'https://dummyimage.com/200x200/ff9c00/ffffff.png&text=SpicyChicken' }
-        ]
-      },
-      {
-        id: 3, name: '营养汤羹', count: 0,
-        dishes: [
-          { id: 301, name: '玉米排骨汤', price: 38, image: 'https://dummyimage.com/200x200/ffdd00/ffffff.png&text=Soup' },
-          { id: 302, name: '西红柿蛋汤', price: 15, image: 'https://dummyimage.com/200x200/ff6347/ffffff.png&text=TomatoSoup' }
-        ]
-      },
-      {
-        id: 4, name: '主食点心', count: 0,
-        dishes: [
-          { id: 401, name: '扬州炒饭', price: 22, image: 'https://dummyimage.com/200x200/f0e68c/ffffff.png&text=Rice' },
-          { id: 402, name: '手工水饺', price: 18, image: 'https://dummyimage.com/200x200/ffffff/333333.png&text=Dumplings' }
-        ]
-      },
-      {
-        id: 5, name: '饮品甜点', count: 0,
-        dishes: [
-          { id: 501, name: '可乐', price: 3, image: 'https://dummyimage.com/200x200/000000/ffffff.png&text=Cola' },
-          { id: 502, name: '橙汁', price: 8, image: 'https://dummyimage.com/200x200/ffa500/ffffff.png&text=Juice' }
+          { id: 101, name: '红烧肉', price: 48, image: '/images/default-dish.png', description: '肥而不腻' }
         ]
       }
     ]
   },
 
-  onLoad() {
-    // 读取登录页存入的用户信息
-    const userInfo = wx.getStorageSync('userInfo') || {}
-    this.setData({ userInfo })
-    console.log("=========")
-    console.log(userInfo)
-    setTimeout(() => {
-      this.calculateHeights()
-    }, 800)
-  },
-
-  // --- 滚动联动逻辑 ---
+  // ==================== 滚动联动 ====================
+  
+  /**
+   * 计算每个分类的高度
+   */
   calculateHeights() {
-    let heightArr = []
-    let h = 0
     const query = wx.createSelectorQuery()
     query.selectAll('.category-block').boundingClientRect((rects) => {
-      if(!rects.length) return
+      if (!rects || rects.length === 0) {
+        console.warn('未找到分类块元素')
+        return
+      }
+      
+      let heightArr = []
+      let totalHeight = 0
+      
       rects.forEach((rect) => {
-        h += rect.height
-        heightArr.push(h)
+        totalHeight += rect.height
+        heightArr.push(totalHeight)
       })
+      
       this.setData({ heightArr })
+      console.log('高度数组:', heightArr)
     }).exec()
   },
 
+  /**
+   * 点击左侧分类切换
+   */
   switchCategory(e) {
     const index = e.currentTarget.dataset.index
     this.setData({
@@ -93,209 +155,239 @@ Page({
       toView: `category-${index}`,
       isTap: true
     })
+    
+    // 500ms后取消点击标记
+    clearTimeout(this.tapTimer)
+    this.tapTimer = setTimeout(() => {
+      this.setData({ isTap: false })
+    }, 500)
   },
 
+  /**
+   * 右侧滚动时联动左侧分类
+   */
   onRightScroll(e) {
-    if (this.data.isTap) {
-      clearTimeout(this.tapTimer)
-      this.tapTimer = setTimeout(() => { this.setData({ isTap: false }) }, 500)
-      return
-    }
+    // 如果是点击切换的，不触发滚动联动
+    if (this.data.isTap) return
+    
     const scrollTop = e.detail.scrollTop
     const { heightArr } = this.data
+    
     for (let i = 0; i < heightArr.length; i++) {
-      let h0 = i === 0 ? 0 : heightArr[i - 1]
-      let h1 = heightArr[i]
-      if (scrollTop >= h0 - 50 && scrollTop < h1 - 50) {
+      const prevHeight = i === 0 ? 0 : heightArr[i - 1]
+      const currHeight = heightArr[i]
+      
+      // 滚动到某个分类区域时高亮对应分类
+      if (scrollTop >= prevHeight - 50 && scrollTop < currHeight - 50) {
         if (this.data.currentCategory !== i) {
           this.setData({ currentCategory: i })
         }
-        return 
+        break
       }
     }
   },
 
-  // 购物车加减逻辑 (修改版)
+  // ==================== 购物车逻辑 ====================
+  
+  /**
+   * 更新购物车(加减菜品)
+   */
   updateCart(e) {
     const { type, id, catIndex } = e.currentTarget.dataset
-    const cart = this.data.cart
+    const cart = { ...this.data.cart }
     let count = cart[id] || 0
     
-    if (type === 'add') count++
-    else if (type === 'minus' && count > 0) count--
-    
-    cart[id] = count
-
-    // 更新对应分类的角标
-    const categoryList = this.data.categoryList
-    // 为了防止 catIndex 在弹窗中传过来是 undefined (弹窗里很难传 index)，我们重新查找一下
-    let targetCatIndex = catIndex
-    if (targetCatIndex === undefined) {
-        targetCatIndex = categoryList.findIndex(cat => cat.dishes.some(d => d.id == id))
+    // 加减逻辑
+    if (type === 'add') {
+      count++
+    } else if (type === 'minus' && count > 0) {
+      count--
     }
     
-    if (targetCatIndex !== -1) {
-        let catCount = 0
-        categoryList[targetCatIndex].dishes.forEach(d => catCount += (cart[d.id] || 0))
-        categoryList[targetCatIndex].count = catCount
+    // 更新购物车
+    if (count > 0) {
+      cart[id] = count
+    } else {
+      delete cart[id]  // 数量为0时删除
     }
-
-    this.setData({ cart, categoryList })
+    
+    this.setData({ cart })
+    
+    // 更新分类角标
+    this.updateCategoryBadge()
+    
+    // 重新计算总价
     this.calculateTotal()
     
-    // 【新增】每次变动都重新生成购物车详情列表，保持数据一致
+    // 更新购物车详情列表
     this.generateCartList()
     
-    // 如果减到0了，自动关闭详情页
+    // 购物车空了自动关闭详情
     if (this.data.totalCount === 0) {
-        this.setData({ showCartDetail: false })
+      this.setData({ showCartDetail: false })
     }
   },
 
-  // 【新增】生成购物车详情数据
-  generateCartList() {
-    const list = []
-    const cart = this.data.cart
-    const categoryList = this.data.categoryList
+  /**
+   * 更新分类角标
+   */
+  updateCategoryBadge() {
+    const { cart, categoryList } = this.data
     
-    categoryList.forEach((cat, catIdx) => {
-        cat.dishes.forEach(dish => {
-            if (cart[dish.id] > 0) {
-                list.push({
-                    ...dish,
-                    count: cart[dish.id],
-                    catIndex: catIdx // 记录所属分类索引，方便 updateCart 使用
-                })
-            }
-        })
+    const newCategoryList = categoryList.map(category => {
+      let count = 0
+      category.dishes.forEach(dish => {
+        count += (cart[dish.id] || 0)
+      })
+      return { ...category, count }
     })
-    this.setData({ cartList: list })
+    
+    this.setData({ categoryList: newCategoryList })
   },
 
-  // 计算总价
+  /**
+   * 计算购物车总价和总数量
+   */
   calculateTotal() {
-    let count = 0, price = 0
-    const allDishes = this.data.categoryList.flatMap(c => c.dishes)
-    for (let id in this.data.cart) {
-      const num = this.data.cart[id]
-      if (num > 0) {
-        const dish = allDishes.find(d => d.id == id)
-        if (dish) {
-          count += num
-          price += dish.price * num
+    const { cart, categoryList } = this.data
+    let totalCount = 0
+    let totalPrice = 0
+    
+    // 遍历所有菜品
+    categoryList.forEach(category => {
+      category.dishes.forEach(dish => {
+        const count = cart[dish.id] || 0
+        if (count > 0) {
+          totalCount += count
+          totalPrice += dish.price * count
         }
-      }
-    }
-    this.setData({ totalCount: count, totalPrice: price.toFixed(2) })
-  },
-
-  // 【新增】切换购物车详情显示
-  toggleCartDetail() {
-    if (this.data.totalCount === 0) return // 没东西点不开
+      })
+    })
+    
     this.setData({
-      showCartDetail: !this.data.showCartDetail
+      totalCount,
+      totalPrice: totalPrice.toFixed(2)
     })
   },
 
-  // 【新增】清空购物车
+  /**
+   * 生成购物车详情列表
+   */
+  generateCartList() {
+    const { cart, categoryList } = this.data
+    const cartList = []
+    
+    categoryList.forEach((category, catIndex) => {
+      category.dishes.forEach(dish => {
+        const count = cart[dish.id]
+        if (count > 0) {
+          cartList.push({
+            ...dish,
+            count,
+            catIndex  // 记录分类索引(用于加减操作)
+          })
+        }
+      })
+    })
+    
+    this.setData({ cartList })
+  },
+
+  /**
+   * 切换购物车详情显示
+   */
+  toggleCartDetail() {
+    if (this.data.totalCount === 0) {
+      wx.showToast({ title: '购物车是空的', icon: 'none' })
+      return
+    }
+    this.setData({ showCartDetail: !this.data.showCartDetail })
+  },
+
+  /**
+   * 清空购物车
+   */
   clearCart() {
     wx.showModal({
-        title: '提示',
-        content: '确定清空购物车吗？',
-        success: (res) => {
-            if (res.confirm) {
-                this.setData({
-                    cart: {},
-                    totalCount: 0,
-                    totalPrice: 0,
-                    cartList: [],
-                    showCartDetail: false
-                })
-                // 同时要清空左侧分类的角标
-                const categoryList = this.data.categoryList.map(cat => ({ ...cat, count: 0 }))
-                this.setData({ categoryList })
-            }
+      title: '提示',
+      content: '确定清空购物车吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            cart: {},
+            cartList: [],
+            totalCount: 0,
+            totalPrice: 0,
+            showCartDetail: false
+          })
+          
+          // 清空分类角标
+          const categoryList = this.data.categoryList.map(cat => ({
+            ...cat,
+            count: 0
+          }))
+          this.setData({ categoryList })
+          
+          wx.showToast({ title: '已清空', icon: 'success' })
         }
+      }
     })
   },
 
-  // --- 用户菜单逻辑 (新功能) ---
+  // ==================== 用户菜单 ====================
+  
+  /**
+   * 切换用户菜单显示
+   */
   toggleUserMenu() {
     this.setData({ showUserMenu: !this.data.showUserMenu })
   },
 
-  preventBubble() {
-    // 阻止点击弹窗内部时关闭弹窗
-  },
+  /**
+   * 阻止事件冒泡
+   */
+  preventBubble() {},
 
+  /**
+   * 处理菜单操作
+   */
   handleMenuAction(e) {
     const type = e.currentTarget.dataset.type
-    this.setData({ showUserMenu: false }) // 点击后关闭弹窗
-
-    // 这里是可以完善的功能入口
-    switch(type) {
-      case 'address':
-        wx.navigateTo({
-          url: '/pages/modify/modify'
-        })
-        
-        break
-      case 'feedback':
-        wx.navigateTo({
-          url: '/pages/feedback/feedback'
-        })
-        break
-      case 'donate':
-        wx.showToast({ title: '感谢您的打赏', icon: 'none' })
-        break
-      case 'order':
-        wx.navigateTo({
-          url: '/pages/order/order'
-        })
-        break
+    this.setData({ showUserMenu: false })
+    
+    const actions = {
+      address: () => wx.navigateTo({ url: '/pages/modify/modify' }),
+      feedback: () => wx.navigateTo({ url: '/pages/feedback/feedback' }),
+      donate: () => wx.showToast({ title: '感谢您的打赏', icon: 'none' }),
+      order: () => wx.navigateTo({ url: '/pages/order/order' })
     }
+    
+    actions[type] && actions[type]()
   },
 
+  // ==================== 跳转结算页 ====================
+  
+  /**
+   * 去结算
+   */
   goToOrder() {
     if (this.data.totalCount === 0) {
       wx.showToast({ title: '请先选择菜品', icon: 'none' })
       return
     }
     
-    // 1. 准备要传给结算页的数据
-    const cartList = [] // 定义变量名为 cartList
-    const cart = this.data.cart
-    const categoryList = this.data.categoryList
-    
-    categoryList.forEach(cat => {
-      cat.dishes.forEach(dish => {
-        if (cart[dish.id] > 0) {
-          // ❌ 之前写错了 list.push
-          // ✅ 这里改为 cartList.push
-          cartList.push({
-            id: dish.id,
-            name: dish.name,
-            price: dish.price,
-            image: dish.image,
-            count: cart[dish.id]
-          })
-        }
-      })
-    })
-
-    // 2. 将选好的菜品存入本地存储
-    wx.setStorageSync('checkedDishes', cartList) // 这里用 cartList
+    // 保存购物车数据到本地存储
+    wx.setStorageSync('checkedDishes', this.data.cartList)
     wx.setStorageSync('orderTotalPrice', this.data.totalPrice)
     wx.setStorageSync('orderTotalCount', this.data.totalCount)
-
-    // 3. 跳转到结算页
+    
+    // 跳转到结算页
     wx.navigateTo({
       url: '/pages/settlement/settlement',
       fail: (err) => {
-        console.error('跳转失败，请检查 pages/order/settlement 目录是否存在', err)
-        wx.showToast({ title: '跳转失败', icon: 'none' })
+        console.error('跳转失败:', err)
+        wx.showToast({ title: '页面跳转失败', icon: 'none' })
       }
     })
   }
-
 })
