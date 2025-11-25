@@ -1,11 +1,10 @@
 <view class="container">
   <view class="page-header">
     <text class="page-title">历史订单</text>
-
   </view>
 
-  <scroll-view class="order-scroll" scroll-y>
-    <view class="order-list">
+  <scroll-view class="order-scroll" scroll-y enable-back-to-top refresher-enabled="{{true}}" bindrefresherrefresh="onPullDownRefresh">
+    <view class="order-list" wx:if="{{orderList.length > 0}}">
       <view 
         class="order-card" 
         wx:for="{{orderList}}" 
@@ -15,14 +14,16 @@
       >
         <view class="card-header">
           <text class="order-time">{{item.time}}</text>
-          <text class="order-status {{item.status === '已完成' ? 'done' : 'cooking'}}">{{item.status}}</text>
+          <text class="order-status {{item.statusCode === 1 ? 'done' : item.statusCode === 2 ? 'cancelled' : 'cooking'}}">
+            {{item.status}}
+          </text>
         </view>
 
         <view class="dish-preview">
-          <block wx:for="{{item.dishes}}" wx:key="id" wx:for-item="dish" wx:if="{{index < 4}}">
+          <block wx:for="{{item.dishes}}" wx:key="name" wx:for-item="dish" wx:if="{{index < 4}}">
             <image class="preview-img" src="{{dish.image}}" mode="aspectFill"></image>
           </block>
-          <view class="more-count" wx:if="{{item.dishes.length > 4}}">...</view>
+          <view class="more-count" wx:if="{{item.dishes.length > 4}}">+{{item.dishes.length - 4}}</view>
         </view>
 
         <view class="card-footer">
@@ -36,8 +37,14 @@
       
       <view style="height: 60rpx;"></view>
     </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:else>
+      <text class="empty-text">暂无订单记录</text>
+    </view>
   </scroll-view>
 
+  <!-- 订单详情弹窗 -->
   <view class="detail-mask" wx:if="{{showDetail}}" bindtap="closeDetail">
     <view class="detail-popup" catchtap="preventBubble">
       <view class="detail-header">
@@ -53,7 +60,7 @@
 
         <view class="detail-section">
           <view class="section-title">菜品信息</view>
-          <view class="detail-dish-item" wx:for="{{currentOrder.dishes}}" wx:key="id">
+          <view class="detail-dish-item" wx:for="{{currentOrder.dishes}}" wx:key="name">
             <view class="detail-dish-name">
               <text>{{item.name}}</text>
               <text class="detail-dish-small" wx:if="{{item.count > 1}}">x{{item.count}}</text>
@@ -68,18 +75,31 @@
 
         <view class="detail-section">
           <view class="info-row">
+            <text class="label">收货人</text>
+            <text class="value">{{currentOrder.consignee}}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">联系电话</text>
+            <text class="value">{{currentOrder.phone}}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">收货地址</text>
+            <text class="value">{{currentOrder.address}}</text>
+          </view>
+          <view class="info-row">
             <text class="label">备注信息</text>
-            <text class="value remark">{{currentOrder.remark || '无备注'}}</text>
+            <text class="value remark">{{currentOrder.remark}}</text>
+          </view>
+          <view class="info-row" wx:if="{{currentOrder.cancelReason}}">
+            <text class="label">取消原因</text>
+            <text class="value remark">{{currentOrder.cancelReason}}</text>
           </view>
           <view class="info-row">
             <text class="label">下单时间</text>
             <text class="value">{{currentOrder.time}}</text>
           </view>
-         
         </view>
       </scroll-view>
-      
-     
     </view>
   </view>
 </view>

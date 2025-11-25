@@ -294,3 +294,22 @@ page {
   border-radius: 50rpx;
   font-weight: bold;
 }
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 200rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 订单状态 */
+.order-status.cancelled {
+  color: #999;
+  background: #f5f5f5;
+}

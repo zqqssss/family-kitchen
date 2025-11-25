@@ -113,7 +113,7 @@ Page({
       {
         id: 1, name: '招牌热菜', count: 0,
         dishes: [
-          { id: 101, name: '红烧肉', price: 48, image: '/images/default-dish.png', description: '肥而不腻' }
+          { id: 101, name: '红烧肉', price: 48, image: 'https://dummyimage.com/100x100/ff9c00/fff.png&text=Dish', description: '肥而不腻' }
         ]
       }
     ]
