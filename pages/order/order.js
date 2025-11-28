@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = 'https://7song.xyz/api'
 
 Page({
   data: {
@@ -10,23 +10,23 @@ Page({
 
   onLoad() {
     console.log('=== 历史订单页面加载 ===')
-    
+
     // 方法1: 从本地存储获取
     let userId = wx.getStorageSync('userId')
     console.log('本地存储的userId:', userId)
-    
+
     // 方法2: 如果本地没有，从全局获取
     if (!userId) {
       userId = getApp().globalData.userId
       console.log('全局数据的userId:', userId)
     }
-    
+
     // 方法3: 如果还是没有，使用测试ID（临时调试用）
     if (!userId) {
       console.warn('未找到userId，使用测试ID')
       userId = 1  // 临时测试用，确认接口正常后删除这行
     }
-    
+
     if (!userId) {
       wx.showModal({
         title: '提示',
@@ -50,7 +50,7 @@ Page({
       })
       return
     }
-    
+
     console.log('最终使用的userId:', userId)
     this.setData({ userId })
     this.loadUserOrders()
@@ -68,9 +68,9 @@ Page({
   loadUserOrders() {
     const url = `${API_BASE_URL}/order/user/${this.data.userId}`
     console.log('请求订单URL:', url)
-    
+
     wx.showLoading({ title: '加载中...' })
-    
+
     wx.request({
       url: url,
       method: 'GET',
@@ -78,7 +78,7 @@ Page({
         console.log('=== 订单响应数据 ===')
         console.log('状态码:', res.statusCode)
         console.log('响应数据:', res.data)
-        
+
         if (res.statusCode !== 200) {
           wx.showToast({
             title: `请求失败: ${res.statusCode}`,
@@ -86,7 +86,7 @@ Page({
           })
           return
         }
-        
+
         if (res.data.code === 200 && res.data.data) {
           const orderList = res.data.data.map(order => ({
             id: order.id,
@@ -110,10 +110,10 @@ Page({
           }))
 
 
-          
+
           console.log('转换后的订单列表:', orderList)
           this.setData({ orderList })
-          
+
           if (orderList.length === 0) {
             wx.showToast({
               title: '暂无订单记录',
@@ -175,5 +175,5 @@ Page({
     }, 1000)
   },
 
-  preventBubble() {}
+  preventBubble() { }
 })

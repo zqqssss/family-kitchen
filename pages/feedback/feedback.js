@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = 'https://7song.xyz/api'
 
 Page({
   data: {
@@ -45,8 +45,8 @@ Page({
     })
   },
 
-   // 提交反馈
-   async submitFeedback() {
+  // 提交反馈
+  async submitFeedback() {
     if (!this.data.content.trim()) {
       wx.showToast({ title: '请填写详细描述', icon: 'none' })
       return
@@ -71,13 +71,13 @@ Page({
 
       // 3. 构建提交给后端的数据
       const feedbackData = {
-      
+
         type: this.data.feedbackTypes[this.data.currentType],
         content: this.data.content,
         contact: this.data.phone || null,
         images: imageUrls.length > 0 ? imageUrls : null
       }
-      
+
       console.log('提交反馈:', feedbackData)
 
       // 4. 发送请求到后端
@@ -90,18 +90,18 @@ Page({
         data: feedbackData,
         success: (res) => {
           wx.hideLoading()
-          
+
           if (res.data.code === 200) {
             wx.showToast({ title: '感谢您的反馈', icon: 'success' })
-            
+
             // 延迟返回
             setTimeout(() => {
               wx.navigateBack()
             }, 1500)
           } else {
-            wx.showToast({ 
-              title: res.data.message || '提交失败', 
-              icon: 'none' 
+            wx.showToast({
+              title: res.data.message || '提交失败',
+              icon: 'none'
             })
           }
         },

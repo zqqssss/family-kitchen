@@ -2,7 +2,7 @@
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 
 // 后端服务器地址(开发环境需要在微信公众平台配置服务器域名)
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = 'https://7song.xyz/api'
 
 Page({
   data: {
@@ -12,7 +12,7 @@ Page({
     },
     defaultAvatarUrl: defaultAvatarUrl
 
-  
+
   },
 
   // 1. 选择头像
@@ -33,9 +33,9 @@ Page({
     console.log("昵称已输入:", nickName)
   },
 
-   /**
-   * 3. 点击登录按钮 - 完整登录流程
-   */
+  /**
+  * 3. 点击登录按钮 - 完整登录流程
+  */
   handleLogin() {
     const { avatarUrl, nickName } = this.data.userInfo
 
@@ -77,7 +77,7 @@ Page({
       success: (loginRes) => {
         if (loginRes.code) {
           console.log('获取到登录code:', loginRes.code)
-          
+
           // 第2步: 调用后端登录接口
           wx.request({
             url: `${API_BASE_URL}/user/login`,
@@ -92,14 +92,14 @@ Page({
             },
             success: (res) => {
               console.log('登录接口返回:', res.data)
-              
+
               if (res.data.code === 200 && res.data.data) {
                 const userData = res.data.data
                 console.log('登录成功,用户信息:', userData)
-                
+
                 // 第3步: 如果用户选择了新头像,上传到服务器
-                if (that.data.avatarTempFilePath && 
-                    that.data.avatarTempFilePath !== defaultAvatarUrl) {
+                if (that.data.avatarTempFilePath &&
+                  that.data.avatarTempFilePath !== defaultAvatarUrl) {
                   that.uploadAvatarToServer(userData.id, () => {
                     // 上传成功后完成登录
                     that.completeLogin(userData)
@@ -108,7 +108,7 @@ Page({
                   // 没有新头像,直接完成登录
                   that.completeLogin(userData)
                 }
-                
+
               } else {
                 wx.hideLoading()
                 wx.showToast({
@@ -155,9 +155,9 @@ Page({
    */
   uploadAvatarToServer(userId, successCallback) {
     const that = this
-    
+
     console.log('开始上传头像,userId:', userId)
-    
+
     wx.uploadFile({
       url: `${API_BASE_URL}/user/uploadAvatar`,
       filePath: that.data.avatarTempFilePath,
@@ -167,7 +167,7 @@ Page({
       },
       success: (uploadRes) => {
         console.log('头像上传返回:', uploadRes)
-        
+
         try {
           const data = JSON.parse(uploadRes.data)
           if (data.success) {
@@ -201,8 +201,8 @@ Page({
    */
   completeLogin(userData) {
     console.log('=== 开始完成登录流程 ===')
-  console.log('接收到的用户数据:', userData)
-  
+    console.log('接收到的用户数据:', userData)
+
     // 保存用户信息到本地缓存
     wx.setStorageSync('userInfo', {
       id: userData.id,
@@ -211,18 +211,18 @@ Page({
       avatarUrl: userData.avatarUrl,
       phone: userData.phone
     })
-    
+
     console.log('用户信息已保存到缓存')
-    
+
     wx.hideLoading()
-    
+
     // 显示欢迎提示
     wx.showToast({
       title: '欢迎回家吃饭',
       icon: 'success',
       duration: 1500
     })
-    
+
     // 延迟跳转,让用户看到欢迎提示
     setTimeout(() => {
       console.log("登录")

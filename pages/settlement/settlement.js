@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = 'https://7song.xyz/api'
 
 const request = (url, method = 'GET', data = {}) => {
   return new Promise((resolve, reject) => {
@@ -29,7 +29,7 @@ Page({
     remark: '',
     diningType: 1,
     loading: false,
-    
+
     // 用于界面展示的用户信息
     displayUserInfo: {
       nickname: '加载中...',
@@ -41,27 +41,27 @@ Page({
 
   async onLoad() {
     console.log('📱 页面加载开始')
-    
+
     const cartList = wx.getStorageSync('checkedDishes') || []
     const totalPrice = wx.getStorageSync('orderTotalPrice') || 0
     const totalCount = wx.getStorageSync('orderTotalCount') || 0
-    
-    this.setData({ 
-      cartList, 
-      totalPrice, 
-      totalCount 
+
+    this.setData({
+      cartList,
+      totalPrice,
+      totalCount
     })
-    
+
     // 加载用户信息
     await this.loadUserInfo()
-    
+
     console.log('✅ 页面加载完成，最终displayUserInfo:', this.data.displayUserInfo)
   },
 
   async loadUserInfo() {
     try {
       const userInfo = wx.getStorageSync('userInfo')
-      
+
       if (!userInfo || !userInfo.id) {
         wx.showToast({ title: '请先登录', icon: 'none' })
         setTimeout(() => {
@@ -74,13 +74,13 @@ Page({
 
       // 调用后端接口
       const res = await request(`/user/${userInfo.id}`, 'GET')
-      
+
       console.log('📦 后端返回完整数据:', res)
       console.log('📦 res.data:', res.data)
 
       if (res.code === 200 && res.data) {
         const userData = res.data
-        
+
         // 🎯 核心：直接使用 setData 设置所有数据
         this.setData({
           userInfo: userData,
@@ -91,12 +91,12 @@ Page({
             avatarUrl: userData.avatarUrl || '/images/default-avatar.png'
           }
         })
-        
+
         console.log('✅ 用户信息映射完成:')
         console.log('  - 昵称:', this.data.displayUserInfo.nickname)
         console.log('  - 手机号:', this.data.displayUserInfo.phone)
         console.log('  - 地址:', this.data.displayUserInfo.address)
-        
+
         // 自动填充收货地址
         if (userData.phone && userData.address) {
           this.setData({
@@ -111,7 +111,7 @@ Page({
           })
           console.log('✅ 收货地址自动填充完成')
         }
-        
+
       } else {
         throw new Error(res.message || '用户信息获取失败')
       }
@@ -146,13 +146,13 @@ Page({
             detailInfo: res.detailInfo
           }
         })
-        
+
         // 更新显示信息
         this.setData({
           'displayUserInfo.phone': res.telNumber,
           'displayUserInfo.address': `${res.provinceName}${res.cityName}${res.countyName}${res.detailInfo}`
         })
-        
+
         console.log('✅ 手动选择地址完成')
       },
       fail: (err) => {
@@ -172,30 +172,30 @@ Page({
       wx.showToast({ title: '用户信息异常,请重新登录', icon: 'none' })
       return
     }
-    
+
     if (this.data.loading) return
     this.setData({ loading: true })
 
     try {
       const orderData = {
         userId: this.data.userInfo.id,
-  consignee: this.data.address.userName,
-  phone: this.data.address.telNumber,
-  address: [
-    this.data.address.provinceName,
-    this.data.address.cityName,
-    this.data.address.countyName,
-    this.data.address.detailInfo
-  ].filter(Boolean).join(''),
-  amount: this.data.totalPrice,
-  remark: this.data.remark,
-  diningType: this.data.diningType === 1 ? 'DINE_IN' : 'TAKE_OUT',
-  items: this.data.cartList.map(item => ({
-    dishId: item.id,      // ✅ 对应后端的dishId
-    name: item.name,
-    quantity: item.count,  // ✅ 对应后端的quantity
-    price: item.price
-  }))
+        consignee: this.data.address.userName,
+        phone: this.data.address.telNumber,
+        address: [
+          this.data.address.provinceName,
+          this.data.address.cityName,
+          this.data.address.countyName,
+          this.data.address.detailInfo
+        ].filter(Boolean).join(''),
+        amount: this.data.totalPrice,
+        remark: this.data.remark,
+        diningType: this.data.diningType === 1 ? 'DINE_IN' : 'TAKE_OUT',
+        items: this.data.cartList.map(item => ({
+          dishId: item.id,      // ✅ 对应后端的dishId
+          name: item.name,
+          quantity: item.count,  // ✅ 对应后端的quantity
+          price: item.price
+        }))
       }
 
       console.log('📮 提交订单数据:', orderData)
@@ -204,25 +204,27 @@ Page({
 
       if (res.code === 200) {
         wx.showToast({ title: '下单成功', icon: 'success' })
-        
+
         // 清除购物车数据
         wx.removeStorageSync('cart')
         wx.removeStorageSync('checkedDishes')
         wx.removeStorageSync('orderTotalPrice')
         wx.removeStorageSync('orderTotalCount')
-        
+
         setTimeout(() => {
-          wx.reLaunch({ url: '/pages/menu/menu' })
-        }, 1500)
+          wx.redirectTo({
+            url: `/pages/pay/pay?amount=${this.data.totalPrice}`
+          })
+        }, 1000)
       } else {
         throw new Error(res.message || '下单失败')
       }
 
     } catch (err) {
       console.error('❌ 提交订单失败:', err)
-      wx.showToast({ 
-        title: err.message || '下单失败,请重试', 
-        icon: 'none' 
+      wx.showToast({
+        title: err.message || '下单失败,请重试',
+        icon: 'none'
       })
     } finally {
       this.setData({ loading: false })

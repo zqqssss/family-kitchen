@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api' // 替换成你的后端地址
+const API_BASE_URL = 'https://7song.xyz/api' // 替换成你的后端地址
 
 Page({
   data: {
@@ -33,10 +33,10 @@ Page({
   loadUserInfo() {
     try {
       const cachedUserInfo = wx.getStorageSync('userInfo')
-      
+
       if (cachedUserInfo && cachedUserInfo.id) {
         console.log('✅ 成功读取用户信息:', cachedUserInfo)
-        
+
         this.setData({
           userInfo: {
             id: cachedUserInfo.id,
@@ -70,7 +70,7 @@ Page({
    */
   loadOrderInfo() {
     const info = wx.getStorageSync('lastOrderInfo') || {}
-    
+
     // 恢复标签选中状态
     const tags = this.data.tasteTags.map(tag => {
       if (info.remark && info.remark.includes(tag.name)) {
@@ -88,16 +88,16 @@ Page({
   },
 
   // 输入监听
-  onPhoneInput(e) { 
-    this.setData({ phone: e.detail.value }) 
+  onPhoneInput(e) {
+    this.setData({ phone: e.detail.value })
   },
-  
-  onAddressInput(e) { 
-    this.setData({ address: e.detail.value }) 
+
+  onAddressInput(e) {
+    this.setData({ address: e.detail.value })
   },
-  
-  onRemarkInput(e) { 
-    this.setData({ remark: e.detail.value }) 
+
+  onRemarkInput(e) {
+    this.setData({ remark: e.detail.value })
   },
 
   // 切换标签
@@ -105,11 +105,11 @@ Page({
     const index = e.currentTarget.dataset.index
     const tags = this.data.tasteTags
     tags[index].selected = !tags[index].selected
-    
+
     // 自动把标签追加到备注输入框里
     let remark = this.data.remark
     const tagName = tags[index].name
-    
+
     if (tags[index].selected) {
       // 选中：追加文字
       if (!remark.includes(tagName)) {
@@ -129,20 +129,20 @@ Page({
    */
   saveInfo() {
     const { phone, address, remark, userInfo } = this.data
-    
+
     // ✅ 1. 校验数据
     if (!phone || phone.length !== 11 || !/^1[3-9]\d{9}$/.test(phone)) {
-      wx.showToast({ 
-        title: '请输入正确的手机号', 
-        icon: 'none' 
+      wx.showToast({
+        title: '请输入正确的手机号',
+        icon: 'none'
       })
       return
     }
-    
+
     if (!address || address.trim() === '') {
-      wx.showToast({ 
-        title: '请填写收货地址', 
-        icon: 'none' 
+      wx.showToast({
+        title: '请填写收货地址',
+        icon: 'none'
       })
       return
     }
@@ -167,7 +167,7 @@ Page({
       },
       success: (res) => {
         console.log('✅ 更新用户信息返回:', res.data)
-        
+
         if (res.data.code === 200) {
           // ✅ 3. 更新本地缓存（用户信息）
           const updatedUserInfo = {
@@ -177,7 +177,7 @@ Page({
             remark: remark
           }
           wx.setStorageSync('userInfo', updatedUserInfo)
-          
+
           // ✅ 4. 更新本地缓存（订单信息）
           const orderInfo = wx.getStorageSync('lastOrderInfo') || {}
           wx.setStorageSync('lastOrderInfo', {
@@ -188,17 +188,17 @@ Page({
           })
 
           wx.hideLoading()
-          wx.showToast({ 
-            title: '保存成功', 
+          wx.showToast({
+            title: '保存成功',
             icon: 'success',
             duration: 1500
           })
-          
+
           // ✅ 5. 延迟返回上一页
           setTimeout(() => {
             wx.navigateBack()
           }, 1500)
-          
+
         } else {
           wx.hideLoading()
           wx.showToast({

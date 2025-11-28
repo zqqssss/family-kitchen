@@ -7,7 +7,8 @@
     "pages/settlement/settlement",
     "pages/modify/modify",
     "pages/feedback/feedback",
-    "pages/order/order"
+    "pages/order/order",
+    "pages/pay/pay"
   ],
   "window": {
     "navigationBarTextStyle": "black",

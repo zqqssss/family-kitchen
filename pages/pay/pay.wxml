@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="pay-card">
+    <view class="title">订单提交成功</view>
+    <view class="amount">¥{{amount}}</view>
+    <view class="tip">请扫描下方二维码支付</view>
+    
+    <image 
+      class="qr-code" 
+      src="/images/pay_code.png" 
+      mode="widthFix"
+      show-menu-by-longpress="{{true}}"
+      bindtap="previewImage"
+    ></image>
+    
+    <view class="desc">点击图片可预览/长按识别</view>
+  </view>
+
+  <button class="paid-btn" type="primary" bindtap="handlePaid">我已完成支付</button>
+</view>
